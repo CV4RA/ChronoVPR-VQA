@@ -1,0 +1,95 @@
+{
+  "raw_verified_count": 43413,
+  "strict_clean_count": 30113,
+  "clean_retention_rate": 0.6936,
+  "by_split": {
+    "train": 19573,
+    "val": 2493,
+    "test": 8047
+  },
+  "by_task": {
+    "out_of_fov": 10163,
+    "occlusion_recovery": 9294,
+    "temporal_evolution": 10656
+  },
+  "by_dataset": {
+    "GSV-Cities": 11627,
+    "SF-XL": 5974,
+    "Pittsburgh250K": 7381,
+    "Nordland": 1347,
+    "MSLS": 3555,
+    "SPED": 229
+  },
+  "by_dataset_and_task": {
+    "GSV-Cities": {
+      "out_of_fov": 3180,
+      "occlusion_recovery": 2892,
+      "temporal_evolution": 5555
+    },
+    "SF-XL": {
+      "temporal_evolution": 2983,
+      "occlusion_recovery": 1760,
+      "out_of_fov": 1231
+    },
+    "Pittsburgh250K": {
+      "out_of_fov": 5721,
+      "occlusion_recovery": 1660
+    },
+    "Nordland": {
+      "temporal_evolution": 763,
+      "occlusion_recovery": 584
+    },
+    "MSLS": {
+      "occlusion_recovery": 2273,
+      "temporal_evolution": 1251,
+      "out_of_fov": 31
+    },
+    "SPED": {
+      "occlusion_recovery": 125,
+      "temporal_evolution": 104
+    }
+  },
+  "by_dataset_and_split": {
+    "GSV-Cities": {
+      "train": 9323,
+      "val": 1156,
+      "test": 1148
+    },
+    "SF-XL": {
+      "train": 4769,
+      "val": 600,
+      "test": 605
+    },
+    "Pittsburgh250K": {
+      "train": 3067,
+      "test": 3864,
+      "val": 450
+    },
+    "Nordland": {
+      "test": 1347
+    },
+    "MSLS": {
+      "train": 2414,
+      "test": 854,
+      "val": 287
+    },
+    "SPED": {
+      "test": 229
+    }
+  },
+  "by_correct_option": {
+    "A": 7563,
+    "B": 7531,
+    "C": 7525,
+    "D": 7494
+  },
+  "overall_single_view_blind_acc": 0.2877,
+  "single_view_blind_acc_by_dataset": {
+    "GSV-Cities": 0.2923,
+    "SF-XL": 0.2976,
+    "Pittsburgh250K": 0.2647,
+    "Nordland": 0.2977,
+    "MSLS": 0.2982,
+    "SPED": 0.3188
+  }
+}

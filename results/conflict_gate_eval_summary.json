@@ -1,0 +1,124 @@
+{
+  "val_best_AUROC": 0.8737,
+  "by_vpr_method": {
+    "resnet50_avg": {
+      "test_aliasing_detection_AUROC": 0.8642,
+      "test_aliasing_detection_Acc": 69.13,
+      "hard_negative_rejection_rate": 64.87,
+      "mean_prob_true_match": 0.8293,
+      "mean_prob_wrong_match": 0.4044
+    },
+    "resnet50_gem": {
+      "test_aliasing_detection_AUROC": 0.8518,
+      "test_aliasing_detection_Acc": 67.98,
+      "hard_negative_rejection_rate": 62.02,
+      "mean_prob_true_match": 0.8252,
+      "mean_prob_wrong_match": 0.4219
+    },
+    "cosplace": {
+      "test_aliasing_detection_AUROC": 0.7648,
+      "test_aliasing_detection_Acc": 66.31,
+      "hard_negative_rejection_rate": 59.43,
+      "mean_prob_true_match": 0.7931,
+      "mean_prob_wrong_match": 0.5366
+    },
+    "eigenplaces": {
+      "test_aliasing_detection_AUROC": 0.7578,
+      "test_aliasing_detection_Acc": 65.9,
+      "hard_negative_rejection_rate": 60.1,
+      "mean_prob_true_match": 0.7917,
+      "mean_prob_wrong_match": 0.5453
+    },
+    "boq_dinov2": {
+      "test_aliasing_detection_AUROC": 0.6704,
+      "test_aliasing_detection_Acc": 66.8,
+      "hard_negative_rejection_rate": 54.47,
+      "mean_prob_true_match": 0.7686,
+      "mean_prob_wrong_match": 0.6396
+    },
+    "clip_vitb32": {
+      "test_aliasing_detection_AUROC": 0.8493,
+      "test_aliasing_detection_Acc": 66.92,
+      "hard_negative_rejection_rate": 63.91,
+      "mean_prob_true_match": 0.8155,
+      "mean_prob_wrong_match": 0.406
+    },
+    "clip_vitl14": {
+      "test_aliasing_detection_AUROC": 0.8385,
+      "test_aliasing_detection_Acc": 66.52,
+      "hard_negative_rejection_rate": 60.93,
+      "mean_prob_true_match": 0.8181,
+      "mean_prob_wrong_match": 0.4388
+    },
+    "dinov2_vitb14": {
+      "test_aliasing_detection_AUROC": 0.7843,
+      "test_aliasing_detection_Acc": 59.79,
+      "hard_negative_rejection_rate": 47.76,
+      "mean_prob_true_match": 0.8282,
+      "mean_prob_wrong_match": 0.5827
+    },
+    "anyloc": {
+      "test_aliasing_detection_AUROC": 0.7689,
+      "test_aliasing_detection_Acc": 60.11,
+      "hard_negative_rejection_rate": 51.3,
+      "mean_prob_true_match": 0.8196,
+      "mean_prob_wrong_match": 0.5995
+    },
+    "convap": {
+      "test_aliasing_detection_AUROC": 0.7352,
+      "test_aliasing_detection_Acc": 65.6,
+      "hard_negative_rejection_rate": 57.1,
+      "mean_prob_true_match": 0.7895,
+      "mean_prob_wrong_match": 0.5816
+    },
+    "cricavpr": {
+      "test_aliasing_detection_AUROC": 0.6935,
+      "test_aliasing_detection_Acc": 65.69,
+      "hard_negative_rejection_rate": 53.75,
+      "mean_prob_true_match": 0.7776,
+      "mean_prob_wrong_match": 0.623
+    },
+    "dinov2_salad": {
+      "test_aliasing_detection_AUROC": 0.6634,
+      "test_aliasing_detection_Acc": 66.17,
+      "hard_negative_rejection_rate": 51.97,
+      "mean_prob_true_match": 0.7699,
+      "mean_prob_wrong_match": 0.6493
+    },
+    "megaloc": {
+      "test_aliasing_detection_AUROC": 0.6677,
+      "test_aliasing_detection_Acc": 66.04,
+      "hard_negative_rejection_rate": 54.52,
+      "mean_prob_true_match": 0.7687,
+      "mean_prob_wrong_match": 0.6415
+    },
+    "mixvpr": {
+      "test_aliasing_detection_AUROC": 0.7327,
+      "test_aliasing_detection_Acc": 65.97,
+      "hard_negative_rejection_rate": 58.1,
+      "mean_prob_true_match": 0.7837,
+      "mean_prob_wrong_match": 0.5739
+    },
+    "netvlad": {
+      "test_aliasing_detection_AUROC": 0.8605,
+      "test_aliasing_detection_Acc": 71.6,
+      "hard_negative_rejection_rate": 68.03,
+      "mean_prob_true_match": 0.8194,
+      "mean_prob_wrong_match": 0.3893
+    },
+    "patch_netvlad": {
+      "test_aliasing_detection_AUROC": 0.8194,
+      "test_aliasing_detection_Acc": 68.71,
+      "hard_negative_rejection_rate": 64.43,
+      "mean_prob_true_match": 0.7988,
+      "mean_prob_wrong_match": 0.4429
+    },
+    "selavpr": {
+      "test_aliasing_detection_AUROC": 0.6891,
+      "test_aliasing_detection_Acc": 65.42,
+      "hard_negative_rejection_rate": 50.28,
+      "mean_prob_true_match": 0.7768,
+      "mean_prob_wrong_match": 0.6264
+    }
+  }
+}

@@ -1,0 +1,578 @@
+{
+  "table1_main": {
+    "Single-View MLLM (No VPR)": {
+      "overall_acc": 44.02,
+      "by_dataset": {
+        "GSV-Cities": 53.66,
+        "SF-XL": 54.05,
+        "Pittsburgh250K": 38.35,
+        "Nordland": 45.43,
+        "MSLS": 48.36,
+        "SPED": 40.17
+      },
+      "by_task": {
+        "occlusion_recovery": 43.65,
+        "out_of_fov": 35.35,
+        "temporal_evolution": 55.77
+      },
+      "n_samples": 8047,
+      "elapsed_sec": 346.5
+    },
+    "Naive VPR+MLLM (boq_dinov2)": {
+      "overall_acc": 47.6,
+      "by_dataset": {
+        "GSV-Cities": 58.45,
+        "SF-XL": 60.99,
+        "Pittsburgh250K": 40.22,
+        "Nordland": 49.59,
+        "MSLS": 54.22,
+        "SPED": 45.85
+      },
+      "by_task": {
+        "occlusion_recovery": 48.6,
+        "out_of_fov": 36.6,
+        "temporal_evolution": 60.14
+      },
+      "n_samples": 8047,
+      "elapsed_sec": 583.3
+    },
+    "Ours Zero-Shot (CTSE+Gate, boq_dinov2)": {
+      "overall_acc": 53.56,
+      "by_dataset": {
+        "GSV-Cities": 60.98,
+        "SF-XL": 61.82,
+        "Pittsburgh250K": 53.29,
+        "Nordland": 46.62,
+        "MSLS": 53.04,
+        "SPED": 41.92
+      },
+      "by_task": {
+        "occlusion_recovery": 46.29,
+        "out_of_fov": 58.55,
+        "temporal_evolution": 58.87
+      },
+      "n_samples": 8047,
+      "elapsed_sec": 620.9
+    },
+    "Oracle Upper Bound (GT Memory)": {
+      "overall_acc": 57.18,
+      "by_dataset": {
+        "GSV-Cities": 62.02,
+        "SF-XL": 64.3,
+        "Pittsburgh250K": 58.85,
+        "Nordland": 48.4,
+        "MSLS": 55.62,
+        "SPED": 43.23
+      },
+      "by_task": {
+        "occlusion_recovery": 50.65,
+        "out_of_fov": 62.05,
+        "temporal_evolution": 61.45
+      },
+      "n_samples": 8047,
+      "elapsed_sec": 678.4
+    },
+    "Ours Full (CTSE+Gate+LoRA, boq_dinov2)": {
+      "overall_acc": 73.47,
+      "by_dataset": {
+        "GSV-Cities": 76.13,
+        "SF-XL": 77.85,
+        "Pittsburgh250K": 76.11,
+        "Nordland": 64.51,
+        "MSLS": 70.96,
+        "SPED": 65.94
+      },
+      "by_task": {
+        "occlusion_recovery": 68.46,
+        "out_of_fov": 83.13,
+        "temporal_evolution": 69.11
+      },
+      "n_samples": 8047,
+      "elapsed_sec": 666.3
+    },
+    "Oracle Upper Bound (+LoRA)": {
+      "overall_acc": 75.8,
+      "by_dataset": {
+        "GSV-Cities": 76.92,
+        "SF-XL": 78.35,
+        "Pittsburgh250K": 79.94,
+        "Nordland": 65.55,
+        "MSLS": 72.25,
+        "SPED": 67.25
+      },
+      "by_task": {
+        "occlusion_recovery": 71.73,
+        "out_of_fov": 85.28,
+        "temporal_evolution": 70.17
+      },
+      "n_samples": 8047,
+      "elapsed_sec": 731.1
+    }
+  },
+  "table2_all_vpr": {
+    "resnet50_avg": {
+      "VPR_R1": 35.73,
+      "Naive_VQA_Acc": 45.48,
+      "Ours_VQA_Acc": 72.26,
+      "Gain": 26.78,
+      "Naive_by_task": {
+        "occlusion_recovery": 45.45,
+        "out_of_fov": 36.86,
+        "temporal_evolution": 56.64
+      },
+      "Ours_by_task": {
+        "occlusion_recovery": 66.78,
+        "out_of_fov": 82.94,
+        "temporal_evolution": 67.36
+      }
+    },
+    "resnet50_gem": {
+      "VPR_R1": 37.5,
+      "Naive_VQA_Acc": 45.52,
+      "Ours_VQA_Acc": 72.09,
+      "Gain": 26.57,
+      "Naive_by_task": {
+        "occlusion_recovery": 45.51,
+        "out_of_fov": 36.56,
+        "temporal_evolution": 57.08
+      },
+      "Ours_by_task": {
+        "occlusion_recovery": 66.69,
+        "out_of_fov": 82.79,
+        "temporal_evolution": 67.02
+      }
+    },
+    "cosplace": {
+      "VPR_R1": 58.48,
+      "Naive_VQA_Acc": 47.02,
+      "Ours_VQA_Acc": 73.27,
+      "Gain": 26.25,
+      "Naive_by_task": {
+        "occlusion_recovery": 47.85,
+        "out_of_fov": 36.52,
+        "temporal_evolution": 59.21
+      },
+      "Ours_by_task": {
+        "occlusion_recovery": 68.31,
+        "out_of_fov": 83.17,
+        "temporal_evolution": 68.53
+      }
+    },
+    "eigenplaces": {
+      "VPR_R1": 59.25,
+      "Naive_VQA_Acc": 46.82,
+      "Ours_VQA_Acc": 73.16,
+      "Gain": 26.34,
+      "Naive_by_task": {
+        "occlusion_recovery": 47.22,
+        "out_of_fov": 36.63,
+        "temporal_evolution": 59.31
+      },
+      "Ours_by_task": {
+        "occlusion_recovery": 67.89,
+        "out_of_fov": 83.28,
+        "temporal_evolution": 68.62
+      }
+    },
+    "dinov2_vitb14": {
+      "VPR_R1": 45.3,
+      "Naive_VQA_Acc": 46.15,
+      "Ours_VQA_Acc": 72.7,
+      "Gain": 26.55,
+      "Naive_by_task": {
+        "occlusion_recovery": 46.17,
+        "out_of_fov": 36.56,
+        "temporal_evolution": 58.49
+      },
+      "Ours_by_task": {
+        "occlusion_recovery": 67.5,
+        "out_of_fov": 83.02,
+        "temporal_evolution": 67.8
+      }
+    },
+    "boq_dinov2": {
+      "VPR_R1": 71.63,
+      "Naive_VQA_Acc": 47.6,
+      "Ours_VQA_Acc": 73.47,
+      "Gain": 25.87,
+      "Naive_by_task": {
+        "occlusion_recovery": 48.6,
+        "out_of_fov": 36.6,
+        "temporal_evolution": 60.14
+      },
+      "Ours_by_task": {
+        "occlusion_recovery": 68.46,
+        "out_of_fov": 83.13,
+        "temporal_evolution": 69.11
+      }
+    },
+    "clip_vitb32": {
+      "VPR_R1": 27.34,
+      "Naive_VQA_Acc": 45.57,
+      "Ours_VQA_Acc": 71.16,
+      "Gain": 25.59,
+      "Naive_by_task": {
+        "occlusion_recovery": 45.66,
+        "out_of_fov": 37.27,
+        "temporal_evolution": 56.11
+      },
+      "Ours_by_task": {
+        "occlusion_recovery": 66.48,
+        "out_of_fov": 79.41,
+        "temporal_evolution": 68.09
+      }
+    },
+    "clip_vitl14": {
+      "VPR_R1": 33.69,
+      "Naive_VQA_Acc": 45.12,
+      "Ours_VQA_Acc": 71.57,
+      "Gain": 26.45,
+      "Naive_by_task": {
+        "occlusion_recovery": 44.88,
+        "out_of_fov": 36.52,
+        "temporal_evolution": 56.6
+      },
+      "Ours_by_task": {
+        "occlusion_recovery": 66.69,
+        "out_of_fov": 80.91,
+        "temporal_evolution": 67.41
+      }
+    },
+    "anyloc": {
+      "VPR_R1": 49.94,
+      "Naive_VQA_Acc": 46.84,
+      "Ours_VQA_Acc": 72.92,
+      "Gain": 26.08,
+      "Naive_by_task": {
+        "occlusion_recovery": 47.76,
+        "out_of_fov": 36.37,
+        "temporal_evolution": 58.83
+      },
+      "Ours_by_task": {
+        "occlusion_recovery": 67.62,
+        "out_of_fov": 83.02,
+        "temporal_evolution": 68.48
+      },
+      "Ours_by_dataset": {
+        "GSV-Cities": 75.35,
+        "SF-XL": 77.36,
+        "Pittsburgh250K": 76.14,
+        "Nordland": 63.4,
+        "MSLS": 69.09,
+        "SPED": 65.07
+      }
+    },
+    "convap": {
+      "VPR_R1": 62.11,
+      "Naive_VQA_Acc": 47.11,
+      "Ours_VQA_Acc": 73.41,
+      "Gain": 26.3,
+      "Naive_by_task": {
+        "occlusion_recovery": 47.94,
+        "out_of_fov": 36.41,
+        "temporal_evolution": 59.55
+      },
+      "Ours_by_task": {
+        "occlusion_recovery": 68.37,
+        "out_of_fov": 83.25,
+        "temporal_evolution": 68.87
+      },
+      "Ours_by_dataset": {
+        "GSV-Cities": 75.96,
+        "SF-XL": 78.18,
+        "Pittsburgh250K": 76.45,
+        "Nordland": 63.62,
+        "MSLS": 70.26,
+        "SPED": 65.94
+      }
+    },
+    "cricavpr": {
+      "VPR_R1": 67.27,
+      "Naive_VQA_Acc": 47.56,
+      "Ours_VQA_Acc": 73.49,
+      "Gain": 25.93,
+      "Naive_by_task": {
+        "occlusion_recovery": 48.78,
+        "out_of_fov": 36.45,
+        "temporal_evolution": 59.89
+      },
+      "Ours_by_task": {
+        "occlusion_recovery": 68.49,
+        "out_of_fov": 83.13,
+        "temporal_evolution": 69.16
+      },
+      "Ours_by_dataset": {
+        "GSV-Cities": 75.96,
+        "SF-XL": 78.18,
+        "Pittsburgh250K": 76.14,
+        "Nordland": 64.88,
+        "MSLS": 70.49,
+        "SPED": 65.94
+      }
+    },
+    "dinov2_salad": {
+      "VPR_R1": 70.77,
+      "Naive_VQA_Acc": 47.51,
+      "Ours_VQA_Acc": 73.37,
+      "Gain": 25.86,
+      "Naive_by_task": {
+        "occlusion_recovery": 48.84,
+        "out_of_fov": 36.37,
+        "temporal_evolution": 59.7
+      },
+      "Ours_by_task": {
+        "occlusion_recovery": 68.37,
+        "out_of_fov": 83.17,
+        "temporal_evolution": 68.82
+      },
+      "Ours_by_dataset": {
+        "GSV-Cities": 76.13,
+        "SF-XL": 77.85,
+        "Pittsburgh250K": 76.09,
+        "Nordland": 64.22,
+        "MSLS": 70.61,
+        "SPED": 65.94
+      }
+    },
+    "megaloc": {
+      "VPR_R1": 70.88,
+      "Naive_VQA_Acc": 47.76,
+      "Ours_VQA_Acc": 73.75,
+      "Gain": 25.99,
+      "Naive_by_task": {
+        "occlusion_recovery": 49.05,
+        "out_of_fov": 36.48,
+        "temporal_evolution": 60.18
+      },
+      "Ours_by_task": {
+        "occlusion_recovery": 68.79,
+        "out_of_fov": 83.4,
+        "temporal_evolution": 69.35
+      },
+      "Ours_by_dataset": {
+        "GSV-Cities": 76.31,
+        "SF-XL": 78.35,
+        "Pittsburgh250K": 76.48,
+        "Nordland": 64.88,
+        "MSLS": 71.08,
+        "SPED": 65.07
+      }
+    },
+    "mixvpr": {
+      "VPR_R1": 63.25,
+      "Naive_VQA_Acc": 47.16,
+      "Ours_VQA_Acc": 73.36,
+      "Gain": 26.2,
+      "Naive_by_task": {
+        "occlusion_recovery": 47.85,
+        "out_of_fov": 36.45,
+        "temporal_evolution": 59.84
+      },
+      "Ours_by_task": {
+        "occlusion_recovery": 68.19,
+        "out_of_fov": 83.02,
+        "temporal_evolution": 69.25
+      },
+      "Ours_by_dataset": {
+        "GSV-Cities": 75.87,
+        "SF-XL": 78.84,
+        "Pittsburgh250K": 76.27,
+        "Nordland": 63.55,
+        "MSLS": 70.49,
+        "SPED": 65.5
+      }
+    },
+    "netvlad": {
+      "VPR_R1": 42.2,
+      "Naive_VQA_Acc": 45.31,
+      "Ours_VQA_Acc": 72.49,
+      "Gain": 27.18,
+      "Naive_by_task": {
+        "occlusion_recovery": 44.88,
+        "out_of_fov": 36.37,
+        "temporal_evolution": 57.52
+      },
+      "Ours_by_task": {
+        "occlusion_recovery": 66.96,
+        "out_of_fov": 83.13,
+        "temporal_evolution": 67.7
+      },
+      "Ours_by_dataset": {
+        "GSV-Cities": 75.09,
+        "SF-XL": 76.86,
+        "Pittsburgh250K": 75.62,
+        "Nordland": 63.25,
+        "MSLS": 67.8,
+        "SPED": 66.81
+      }
+    },
+    "patch_netvlad": {
+      "VPR_R1": 48.94,
+      "Naive_VQA_Acc": 46.18,
+      "Ours_VQA_Acc": 73.03,
+      "Gain": 26.85,
+      "Naive_by_task": {
+        "occlusion_recovery": 46.29,
+        "out_of_fov": 36.56,
+        "temporal_evolution": 58.39
+      },
+      "Ours_by_task": {
+        "occlusion_recovery": 68.07,
+        "out_of_fov": 83.09,
+        "temporal_evolution": 68.09
+      },
+      "Ours_by_dataset": {
+        "GSV-Cities": 75.09,
+        "SF-XL": 77.52,
+        "Pittsburgh250K": 75.96,
+        "Nordland": 63.77,
+        "MSLS": 70.61,
+        "SPED": 65.07
+      }
+    },
+    "selavpr": {
+      "VPR_R1": 66.97,
+      "Naive_VQA_Acc": 47.61,
+      "Ours_VQA_Acc": 73.34,
+      "Gain": 25.73,
+      "Naive_by_task": {
+        "occlusion_recovery": 49.17,
+        "out_of_fov": 36.45,
+        "temporal_evolution": 59.46
+      },
+      "Ours_by_task": {
+        "occlusion_recovery": 68.4,
+        "out_of_fov": 82.94,
+        "temporal_evolution": 68.96
+      },
+      "Ours_by_dataset": {
+        "GSV-Cities": 76.05,
+        "SF-XL": 78.35,
+        "Pittsburgh250K": 75.93,
+        "Nordland": 64.14,
+        "MSLS": 71.08,
+        "SPED": 65.5
+      }
+    }
+  },
+  "table3_ablation": {
+    "ablation_vpr_backbone": "cosplace",
+    "1. Naive VPR + MLLM (Baseline)": {
+      "overall_acc": 47.02,
+      "by_dataset": {
+        "GSV-Cities": 56.36,
+        "SF-XL": 60.66,
+        "Pittsburgh250K": 40.3,
+        "Nordland": 49.37,
+        "MSLS": 52.34,
+        "SPED": 44.1
+      },
+      "by_task": {
+        "occlusion_recovery": 47.88,
+        "out_of_fov": 36.48,
+        "temporal_evolution": 59.21
+      },
+      "n_samples": 8047,
+      "elapsed_sec": 580.2
+    },
+    "2. + CTSE Only (w/o Pose/Time Meta, w/o Gate, w/o LoRA)": {
+      "overall_acc": 55.37,
+      "by_dataset": {
+        "GSV-Cities": 59.49,
+        "SF-XL": 62.81,
+        "Pittsburgh250K": 56.5,
+        "Nordland": 49.37,
+        "MSLS": 51.99,
+        "SPED": 44.1
+      },
+      "by_task": {
+        "occlusion_recovery": 47.76,
+        "out_of_fov": 61.97,
+        "temporal_evolution": 59.17
+      },
+      "n_samples": 8047,
+      "elapsed_sec": 581.3
+    },
+    "3. + CTSE + Spatio-Temporal Meta (w/o Conflict Gate)": {
+      "overall_acc": 54.31,
+      "by_dataset": {
+        "GSV-Cities": 60.37,
+        "SF-XL": 62.64,
+        "Pittsburgh250K": 54.71,
+        "Nordland": 47.59,
+        "MSLS": 51.87,
+        "SPED": 43.67
+      },
+      "by_task": {
+        "occlusion_recovery": 46.29,
+        "out_of_fov": 60.5,
+        "temporal_evolution": 59.26
+      },
+      "n_samples": 8047,
+      "elapsed_sec": 678.2
+    },
+    "4. + CTSE + Spatio-Temporal Meta + Trained Conflict Gate": {
+      "overall_acc": 53.09,
+      "by_dataset": {
+        "GSV-Cities": 59.76,
+        "SF-XL": 61.32,
+        "Pittsburgh250K": 53.47,
+        "Nordland": 46.25,
+        "MSLS": 50.59,
+        "SPED": 41.05
+      },
+      "by_task": {
+        "occlusion_recovery": 45.78,
+        "out_of_fov": 58.43,
+        "temporal_evolution": 58.0
+      },
+      "n_samples": 8047,
+      "elapsed_sec": 598.4
+    },
+    "5. Full Ours (+ CTSE + Meta + Conflict Gate + LoRA)": {
+      "overall_acc": 73.31,
+      "by_dataset": {
+        "GSV-Cities": 75.78,
+        "SF-XL": 77.52,
+        "Pittsburgh250K": 76.45,
+        "Nordland": 63.62,
+        "MSLS": 69.91,
+        "SPED": 66.38
+      },
+      "by_task": {
+        "occlusion_recovery": 68.43,
+        "out_of_fov": 83.17,
+        "temporal_evolution": 68.48
+      },
+      "n_samples": 8047,
+      "elapsed_sec": 645.1
+    }
+  },
+  "table4_noise_robustness": {
+    "noise_0pct": {
+      "Naive_VQA_Acc": 59.42,
+      "Ours_Gated_VQA_Acc": 75.21,
+      "Robustness_Gain": 15.79
+    },
+    "noise_20pct": {
+      "Naive_VQA_Acc": 56.58,
+      "Ours_Gated_VQA_Acc": 72.96,
+      "Robustness_Gain": 16.38
+    },
+    "noise_40pct": {
+      "Naive_VQA_Acc": 54.75,
+      "Ours_Gated_VQA_Acc": 72.04,
+      "Robustness_Gain": 17.29
+    },
+    "noise_60pct": {
+      "Naive_VQA_Acc": 50.83,
+      "Ours_Gated_VQA_Acc": 70.5,
+      "Robustness_Gain": 19.67
+    },
+    "noise_80pct": {
+      "Naive_VQA_Acc": 47.67,
+      "Ours_Gated_VQA_Acc": 69.33,
+      "Robustness_Gain": 21.66
+    }
+  }
+}
