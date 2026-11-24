@@ -8,54 +8,24 @@ and merges their metrics into ./workspace/conflict_gate_eval_summary.json.
 """
 
 import os
-import sys
 import json
 import time
 import argparse
 import numpy as np
 from sklearn.metrics import roc_auc_score, accuracy_score
 import torch
-import torch.nn.functional as F
-from torch.utils.data import DataLoader
 
 os.environ["TORCH_HOME"] = "./workspace/torch_cache"
 
-sys.path.insert(0, "./workspace")
-from exp2_train_conflict_resolution_gate import (
+from src.conflict_gate.train_conflict_gate import (
     DATA_BASE,
     CLEAN_DIR,
     VPR_DIR,
     EXP_DIR,
-    SpatialGridDataset,
     SpatioTemporalConflictGate,
+    extract_dinov2_spatial_tokens,
     make_meta_vec,
 )
-
-
-@torch.inference_mode()
-def extract_dinov2_local(img_paths, batch_size=192, device="cuda"):
-    local_dino = "./workspace/torch_cache/hub/facebookresearch_dinov2_main"
-    backbone = torch.hub.load(local_dino, "dinov2_vitb14", source="local", trust_repo=True).eval().to(device)
-    ds = SpatialGridDataset(img_paths)
-    loader = DataLoader(ds, batch_size=batch_size, shuffle=False, num_workers=8, pin_memory=True)
-
-    cls_list, grid_list = [], []
-    for imgs in loader:
-        imgs = imgs.to(device, non_blocking=True)
-        with torch.amp.autocast("cuda", dtype=torch.bfloat16):
-            out = backbone.forward_features(imgs)
-            cls_tok = F.normalize(out["x_norm_clstoken"].float(), p=2, dim=-1)
-            patches = out["x_norm_patchtokens"].float()
-            B, N, D = patches.shape
-            grid = patches.transpose(1, 2).reshape(B, D, 16, 16)
-            grid4 = F.avg_pool2d(grid, kernel_size=4, stride=4).flatten(2).transpose(1, 2)
-            grid4 = F.normalize(grid4, p=2, dim=-1)
-        cls_list.append(cls_tok.half().cpu())
-        grid_list.append(grid4.half().cpu())
-
-    del backbone
-    torch.cuda.empty_cache()
-    return torch.cat(cls_list, dim=0), torch.cat(grid_list, dim=0)
 
 
 def main():
@@ -98,7 +68,7 @@ def main():
     rel_to_idx = {rel: i for i, rel in enumerate(unique_rels)}
     abs_paths = [os.path.join(DATA_BASE, rel) for rel in unique_rels]
     print(f"[Exp2-Inc] Extracting DINOv2-ViT-B/14 4x4 grids for {len(abs_paths)} unique test/retrieved images...", flush=True)
-    cls_bank, grid_bank = extract_dinov2_local(abs_paths, batch_size=192)
+    cls_bank, grid_bank = extract_dinov2_spatial_tokens(abs_paths, batch_size=192)
     print(f"[Exp2-Inc] Features extracted in {time.time() - t0:.1f}s!", flush=True)
 
     device = "cuda"

@@ -59,9 +59,8 @@ REPOS_DIR = "./workspace/vpr_repos"
 os.makedirs(OUT_DIR, exist_ok=True)
 
 
-# Import shared gallery & CTSE helpers directly from exp1_build_gallery_and_run_all_vpr.py
-sys.path.insert(0, "./workspace")
-from exp1_build_gallery_and_run_all_vpr import (
+# Share the gallery and CTSE helpers with the primary retrieval runner.
+from src.vpr_retrieval.run_vpr_gallery_and_ctse import (
     ensure_occlusion_images_exist,
     build_benchmark_galleries,
     parse_question_spatiotemporal_intent,

@@ -32,3 +32,7 @@ hf_cache/
 .env
 .DS_Store
 Thumbs.db
+
+# Local project website output
+dist/
+.figure-deps/

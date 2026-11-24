@@ -5,7 +5,7 @@
 **`ChronoVPR-VQA`** is a strictly blind-filtered benchmark of **30,113 unique physical places** designed to evaluate physical-world multimodal reasoning beyond the single-view observational horizon. Spanning **six canonical Visual Place Recognition (VPR) benchmarks**—**GSV-Cities** (23 global cities), **Pittsburgh250K**, **SF-XL**, **MSLS**, **Nordland** (zero-shot OOD), and **SPED** (zero-shot OOD)—every sample pairs an online street-view query observation $I_q$ with a geo-referenced chrono-topological complementary memory view $I_m$ along three reasoning axes:
 
 1. **Task A — Occlusion Recovery (9,294 places / 3,329 test):** A deterministic foreground barrier obscures the queried storefront/object in $I_q$; resolving the question requires localizing an unoccluded historical pass at the same physical place.
-2. **Task B — Out-of-FoV Topological Reasoning (10,163 places / 2,656 test):** The question probes architectural landmarks visible only after an ego-centric camera rotation ($\Delta\theta \in \{\pm 90^\circ, 180^\circ\}$), exposing the *Similarity–Complementarity Paradox*.
+2. **Task B — Out-of-FoV Topological Reasoning (10,163 places / 2,656 test):** The question probes landmarks outside the current view. The annotations provide the relative yaw for each example, including turns other than 90° and 180°.
 3. **Task C — Longitudinal Temporal Evolution (10,656 places / 2,062 test):** The question examines multi-year urban, seasonal, or weather-induced changes ($\Delta t$ up to 15 years, mean 6.7 years) across distinct capture passes.
 
 ---
@@ -76,4 +76,4 @@ To respect upstream dataset licenses and geographic privacy policies, `ChronoVPR
 ## Ethics, Privacy & License
 
 - All upstream street-view datasets apply face and license-plate blurring prior to academic release.
-- All derived annotations in `ChronoVPR-VQA` are released under **CC-BY-4.0** for non-commercial academic research.
+- The release [license](../LICENSE) specifies [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) for the derived annotations. Upstream datasets retain their own terms.

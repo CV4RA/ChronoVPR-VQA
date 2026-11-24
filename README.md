@@ -1,236 +1,245 @@
 <div align="center">
 
-# Beyond Appearance Lookup: Epistemically Gated Chrono-Topological Visual Place Recognition as Spatio-Temporal Memory for Multimodal Reasoning
+# ChronoVPR-VQA
 
-[![IEEE TPAMI](https://img.shields.io/badge/Venue-IEEE%20TPAMI%20(Under%20Review)-00629B.svg)](#citation)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.3%2B-EE4C2C.svg?logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![Dataset](https://img.shields.io/badge/Benchmark-ChronoVPR--VQA%20(30%2C113%20Places)-2B9348.svg)](data/DATASET_CARD.md)
-[![License: MIT](https://img.shields.io/badge/Code%20License-MIT-blue.svg)](LICENSE)
-[![Data License: CC BY 4.0](https://img.shields.io/badge/Data%20License-CC%20BY%204.0-lightgrey.svg)](data/DATASET_CARD.md)
+**Beyond Appearance Lookup**
+
+*Epistemically Gated Chrono-Topological Visual Place Recognition as Spatio-Temporal Memory for Multimodal Reasoning*
+
+[Interactive project page](https://cv4ra.github.io/ChronoVPR-VQA/) · [Results](#main-results) · [Dataset](#benchmark) · [Quick start](#quick-start) · [Reproduction](#reproducing-the-experiments)
+
+[![Code license: MIT](https://img.shields.io/badge/code-MIT-096b79)](LICENSE)
+[![Annotations: CC BY 4.0](https://img.shields.io/badge/annotations-CC%20BY%204.0-136c56)](data/DATASET_CARD.md)
+[![Benchmark: 30,113 places](https://img.shields.io/badge/benchmark-30%2C113%20places-374e6e)](data/dataset_stats_clean.json)
 
 </div>
 
-<p align="center">
-  <img src="assets/teaser.png" width="96%" alt="ChronoVPR-VQA Motivating Teaser"/>
-</p>
+## Overview
 
-> **Official implementation, benchmark annotations (`ChronoVPR-VQA`), trained checkpoints, and complete 17-method (4-era, 2016–2025) evaluation suite** for *"Beyond Appearance Lookup: Epistemically Gated Chrono-Topological Visual Place Recognition as Spatio-Temporal Memory for Multimodal Reasoning"*.
+A single street view can hide a storefront behind an occluder, miss a landmark outside the camera's field of view, or show a place years after the event a question asks about. ChronoVPR-VQA treats georeferenced street views as a spatio-temporal memory. A frozen visual place recognition (VPR) model anchors the search, Chrono-Topological Sub-Graph Expansion (CTSE) selects a complementary view, a Conflict Gate scores the reliability of that view, and a calibrated vision–language model reasons over the resulting evidence.
 
----
+<p align="center"><img src="assets/teaser.png" width="950" alt="Illustrative awning question showing a masked query, an aliased retrieval, and a verified historical view with the answer."></p>
 
-## News & Highlights
+## Main results
 
-- **[Benchmark Release]** `ChronoVPR-VQA` (30,113 blind-filtered unique physical places across 6 canonical VPR datasets: **GSV-Cities, Pittsburgh250K, SF-XL, MSLS, Nordland [Zero-Shot OOD], and SPED [Zero-Shot OOD]**) is included in [`data/annotations/`](data/annotations/).
-- **[Universal Plug-and-Play Gains]** Across **17 VPR methods spanning four technological eras (2016–2025)** on all 8,047 test queries, our framework achieves **+25.59% to +27.18%** absolute VQA accuracy improvements over naive VPR+MLLM—peaking at **73.75%** with MegaLoc (within **2.05%** of the 75.80% Oracle ceiling).
-- **[Epistemic Compensation Law ($r = -0.95$)]** A single frozen, similarity-free **Scale-Invariant Conflict Resolution Gate** (`checkpoints/conflict_gate_best.pt`, 2.1 MB) transfers zero-shot across all 17 VPR backbones, achieving its highest aliasing-detection AUROC on noisier legacy retrievers (**0.8642** on ResNet50-Avg, **0.8605** on NetVLAD) and compressing a **44.29-point** VPR Recall@1 chasm into just **2.59 points** of downstream VQA spread!
+| Result | Value | Evaluation setting |
+| --- | ---: | --- |
+| Best full-system VQA accuracy | **73.75%** | MegaLoc, 8,047 test questions |
+| Gain over naïve VPR + MLLM | **+25.59 to +27.18 pp** | Paired comparisons across 17 frozen retrievers |
+| Oracle VQA accuracy | **75.80%** | Ground-truth memory with the LoRA-calibrated reasoner |
+| VPR Recall@1 vs. full-system VQA spread | **44.29 vs. 2.59 pp** | Max–min across 17 retrievers |
+| Best test Conflict Gate AUROC | **0.8642** | ResNet50-Avg, shared frozen gate |
+| Gate AUROC vs. VPR Recall@1 | **Pearson r ≈ −0.95** | 17 method-level pairs |
 
----
+<p align="center"><img src="assets/release_results.png" width="950" alt="Four panels comparing paired VQA accuracy, Conflict Gate AUROC, reasoning-task accuracy, and injected aliasing noise."></p>
 
-## Core Research Problem & Framework Overview
+The full system reaches **83.13%** on out-of-field-of-view questions with BoQ-DINOv2, up from **36.60%** for the naïve cascade. At **80% injected aliasing noise**, the separate stress test reports **69.33%** gated accuracy and **47.67%** naïve accuracy.
 
-Naive *"top-1 appearance lookup"* VPR+MLLM cascades fail strikingly (e.g., SOTA BoQ attains 71.63% Recall@1 yet only 47.60% VQA accuracy—barely +3.58% above a single-view MLLM) due to **three violated theoretical premises**:
+The figure and tables use the committed [VQA results](results/final_paper_results.json), [gate summary](results/conflict_gate_eval_summary.json), and [appendix statistics](results/appendix_computed_stats.json). Accuracy and Recall@1 are percentages. Gains are absolute percentage points (pp). Gate AUROC is on a 0–1 scale.
 
-1. **The Similarity–Complementarity Paradox:** Standard VPR maximizes appearance overlap, returning redundant same-heading views rather than visually disjoint yet topologically complementary views ($<0.9\%$ exact out-of-FoV recovery across all 17 VPR methods).
-2. **Perceptual-Aliasing Visual Poisoning:** Unfiltered VPR false positives inject geographically false visual tokens into MLLM cross-attention, actively corrupting predictions unless physically suppressed and jointly calibrated.
-3. **Geometric–Semantic Decoupling & Retriever Scale Shift:** Vision-language encoders (CLIP) suffer severe geometric localization collapse (27.34%–33.69% R@1), while raw top-1 cosine medians shift $16.5\times$ across architectures ($0.054 \to 0.893$).
+### Full 17-retriever comparison
 
-<p align="center">
-  <img src="assets/framework.png" width="98%" alt="Chrono-Topological VPR-VQA Architecture"/>
-</p>
+| Family | Retriever | Recall@1 | Gate AUROC | Naïve VQA | Full VQA | Gain (pp) |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| Early CNN / VLAD | ResNet50-Avg | 35.73% | 0.8642 | 45.48% | 72.26% | +26.78 |
+| Early CNN / VLAD | ResNet50-GeM | 37.50% | 0.8518 | 45.52% | 72.09% | +26.57 |
+| Early CNN / VLAD | NetVLAD | 42.20% | 0.8605 | 45.31% | 72.49% | +27.18 |
+| Early CNN / VLAD | Patch-NetVLAD | 48.94% | 0.8194 | 46.18% | 73.03% | +26.85 |
+| Large-scale CNN | CosPlace | 58.48% | 0.7648 | 47.02% | 73.27% | +26.25 |
+| Large-scale CNN | EigenPlaces | 59.25% | 0.7578 | 46.82% | 73.16% | +26.34 |
+| Large-scale CNN | Conv-AP | 62.11% | 0.7352 | 47.11% | 73.41% | +26.30 |
+| Large-scale CNN | MixVPR | 63.25% | 0.7327 | 47.16% | 73.36% | +26.20 |
+| Foundation models | DINOv2-ViT-B/14 | 45.30% | 0.7843 | 46.15% | 72.70% | +26.55 |
+| Foundation models | AnyLoc | 49.94% | 0.7689 | 46.84% | 72.92% | +26.08 |
+| Foundation models | SelaVPR | 66.97% | 0.6891 | 47.61% | 73.34% | +25.73 |
+| Foundation models | CricaVPR | 67.27% | 0.6935 | 47.56% | 73.49% | +25.93 |
+| Foundation models | DINOv2-SALAD | 70.77% | 0.6634 | 47.51% | 73.37% | +25.86 |
+| Foundation models | BoQ-DINOv2 | 71.63% | 0.6704 | 47.60% | 73.47% | +25.87 |
+| Foundation models | MegaLoc | 70.88% | 0.6677 | 47.76% | 73.75% | +25.99 |
+| CLIP | CLIP-ViT-B/32 | 27.34% | 0.8493 | 45.57% | 71.16% | +25.59 |
+| CLIP | CLIP-ViT-L/14 | 33.69% | 0.8385 | 45.12% | 71.57% | +26.45 |
 
-Our four-stage architecture leaves any VPR backbone **completely frozen and plug-and-play**:
-- **Stage 1 — Multimodal Encoding & Spatio-Temporal Intent Parsing:** Extracts frozen VPR descriptors alongside structured occlusion, yaw ($\Delta\theta$), and temporal ($\Delta t$) reasoning intents.
-- **Stage 2 — Chrono-Topological Sub-Graph Expansion (CTSE):** Decouples physical place anchoring from intent-guided angular/temporal traversal over the geo-tagged memory graph, boosting exact out-of-FoV complementary view recovery from **<0.9% to 98.3%** at **<0.1 ms** latency.
-- **Stage 3 — Scale-Invariant Neural Conflict Resolution Gate:** Verifies cross-view $4\times 4$ dense DINOv2-ViT-B/14 spatial patch correlation matrices ($\mathbf{C} = \mathbf{G}_q\mathbf{G}_m^\top$) without raw VPR similarity, physically suppressing aliased retrievals below $\tau = 0.45$.
-- **Stage 4 — Conflict-Aware Spatio-Temporal LoRA Calibration:** Conditions a lightweight LoRA-calibrated Qwen2.5-VL-7B reasoner ($r=16$, 0.57% trainable parameters) on verified $(I_q, I_{\text{ctse}}, \Delta\theta, \Delta t, r, q_{\text{focus}})$ cues.
+<details>
+<summary>BoQ-DINOv2 accuracy by task and protocol</summary>
 
----
+| Protocol | Overall | Occlusion recovery | Out-of-FoV | Temporal evolution |
+| --- | ---: | ---: | ---: | ---: |
+| Single-view MLLM | 44.02% | 43.65% | 35.35% | 55.77% |
+| Naïve VPR + MLLM | 47.60% | 48.60% | 36.60% | 60.14% |
+| CTSE + Gate (zero-shot) | 53.56% | 46.29% | 58.55% | 58.87% |
+| CTSE + Gate + LoRA | 73.47% | 68.46% | 83.13% | 69.11% |
+| Oracle ground-truth memory + LoRA | 75.80% | 71.73% | 85.28% | 70.17% |
 
-## The `ChronoVPR-VQA` Benchmark
+</details>
 
-<p align="center">
-  <img src="assets/benchmark_sunburst.png" width="62%" alt="ChronoVPR-VQA Benchmark Taxonomy"/>
-</p>
+<details>
+<summary>CosPlace ablation and aliasing noise stress test</summary>
 
-`ChronoVPR-VQA` spans **30,113 unique physical places** across **6 canonical VPR datasets** and **3 physical-horizon reasoning tasks** (**Task A:** Occlusion Recovery, **Task B:** Out-of-FoV Topological Reasoning, **Task C:** Longitudinal Temporal Evolution), strictly blind-filtered against single-view guessing with uniform 25% A/B/C/D option balance. **Nordland** and **SPED** are strictly held out for zero-shot out-of-domain evaluation. See [`data/DATASET_CARD.md`](data/DATASET_CARD.md) for the complete schema, city statistics, and upstream image preparation guide.
+The component ablation uses CosPlace. The stress-test protocol uses injected retrieval noise and reports a separate accuracy series.
 
-| Benchmark | Total | Train | Val | Test | Primary Shift | Tasks |
-| :--- | :---: | :---: | :---: | :---: | :--- | :---: |
-| **GSV-Cities** | 11,627 | 9,331 | 1,148 | 1,148 | Multi-year urban (23 cities) | A, C |
-| **Pittsburgh250K** | 7,381 | 3,098 | 419 | 3,864 | $360^\circ$ panoramic intersections | A, B |
-| **SF-XL** | 5,974 | 4,764 | 605 | 605 | Multi-heading & temporal | A, B, C |
-| **MSLS** | 3,555 | 2,380 | 321 | 854 | Multi-city sequences | A, C |
-| **Nordland** *(Zero-Shot OOD)* | 1,347 | 0 | 0 | 1,347 | 4-season railway shift | A, C |
-| **SPED** *(Zero-Shot OOD)* | 229 | 0 | 0 | 229 | Extreme weather / night | A, C |
-| **Total** | **30,113** | **19,573** | **2,493** | **8,047** | **6 Canonical Benchmarks** | **A, B, C** |
+| CosPlace configuration | VQA accuracy |
+| --- | ---: |
+| Naive VPR + MLLM (Baseline) | 47.02% |
+| + CTSE Only (w/o Pose/Time Meta, w/o Gate, w/o LoRA) | 55.37% |
+| + CTSE + Spatio-Temporal Meta (w/o Conflict Gate) | 54.31% |
+| + CTSE + Spatio-Temporal Meta + Trained Conflict Gate | 53.09% |
+| Full Ours (+ CTSE + Meta + Conflict Gate + LoRA) | 73.31% |
 
----
+| Injected aliasing noise | Naïve VQA | Gated VQA | Gain (pp) |
+| ---: | ---: | ---: | ---: |
+| 0% | 59.42% | 75.21% | +15.79 |
+| 20% | 56.58% | 72.96% | +16.38 |
+| 40% | 54.75% | 72.04% | +17.29 |
+| 60% | 50.83% | 70.50% | +19.67 |
+| 80% | 47.67% | 69.33% | +21.66 |
 
-## Main Benchmark Results Across 17 VPR Methods (4 Eras, 2016–2025)
+</details>
 
-<p align="center">
-  <img src="assets/scaling_law.png" width="96%" alt="Four-Era 17-Method Scaling and Epistemic Compensation Law"/>
-</p>
+## Method
 
-All 17 VPR encoders share the **identical frozen Conflict Gate (`conflict_gate_best.pt`)** and **LoRA Reasoner (`Qwen2.5-VL-7B + LoRA`)** with **zero per-backbone retraining** on all $N = 8,047$ test queries (deterministic greedy decoding, $T = 0.0$):
+<p align="center"><img src="assets/framework.png" width="950" alt="ChronoVPR-VQA architecture with frozen encoding, CTSE memory expansion, Conflict Gate, and LoRA reasoning."></p>
 
-| Era | VPR Method | VPR R@1 (%) | Gate AUROC | Naive VPR+MLLM (%) | **Ours Full (%)** | **Abs. Gain** |
-| :--- | :--- | :---: | :---: | :---: | :---: | :---: |
-| *Baseline* | Single-View MLLM (No VPR) | — | — | 44.02 | — | — |
-| **Era 1** (2016–21) | ResNet50-Avg | 35.73 | **0.8642** | 45.48 | 72.26 | +26.78 |
-| **Era 1** (2016–21) | ResNet50-GeM | 37.50 | 0.8518 | 45.52 | 72.09 | +26.57 |
-| **Era 1** (2016–21) | NetVLAD | 42.20 | 0.8605 | 45.31 | 72.49 | **+27.18** |
-| **Era 1** (2016–21) | Patch-NetVLAD | 48.94 | 0.8221 | 46.18 | 73.03 | +26.85 |
-| **Era 2** (2022–23) | CosPlace | 58.48 | 0.7648 | 46.46 | 73.17 | +26.71 |
-| **Era 2** (2022–23) | EigenPlaces | 59.25 | 0.7578 | 46.63 | 73.12 | +26.49 |
-| **Era 2** (2022–23) | Conv-AP | 62.11 | 0.7429 | 46.99 | 73.24 | +26.25 |
-| **Era 2** (2022–23) | MixVPR | 63.25 | 0.7327 | 47.00 | 73.11 | +26.11 |
-| **Era 3** (2023–25) | DINOv2-ViT-B/14 | 45.30 | 0.8313 | 46.02 | 72.46 | +26.44 |
-| **Era 3** (2023–25) | AnyLoc | 49.94 | 0.8105 | 46.18 | 72.81 | +26.63 |
-| **Era 3** (2023–25) | SelaVPR | 66.97 | 0.7155 | 47.41 | 73.48 | +26.07 |
-| **Era 3** (2023–25) | CricaVPR | 67.27 | 0.6951 | 47.20 | 73.44 | +26.24 |
-| **Era 3** (2023–25) | DINOv2-SALAD | 70.77 | 0.6634 | 47.57 | 73.63 | +26.06 |
-| **Era 3** (2023–25) | BoQ-DINOv2 | **71.63** | 0.6704 | 47.60 | 73.47 | +25.87 |
-| **Era 3** (2023–25) | MegaLoc | 70.88 | 0.6677 | 47.76 | **73.75** | +25.99 |
-| **Era 4** (Semantic) | CLIP-ViT-B/32 | 27.34 | 0.8493 | 45.12 | 71.16 | +26.04 |
-| **Era 4** (Semantic) | CLIP-ViT-L/14 | 33.69 | 0.8385 | 45.73 | 71.32 | +25.59 |
-| *Upper Bound* | Oracle GT Memory (+LoRA) | 100.00 | — | — | *75.80* | — |
+1. **Encode and parse intent.** A frozen VPR encoder provides a place anchor. Query intent specifies occlusion, relative yaw, or a temporal offset.
+2. **Traverse the memory.** CTSE searches the place graph for a view that complements the query under the inferred intent.
+3. **Verify the candidate.** A shared gate combines cross-view correlations from pooled 4 × 4 DINOv2 patch grids, CLS features, and scale-invariant metadata. The reported gate threshold is `0.45`.
+4. **Calibrate the reasoner.** A rank-16 LoRA adapter for Qwen2.5-VL-7B-Instruct conditions the answer on the query and selected memory alongside pose, time, and gate reliability.
 
----
+## Benchmark
 
-## Repository Structure
+The release contains **30,113 unique places** and associated four-option questions from six source benchmarks. Nordland and SPED are held out for test-only, out-of-domain evaluation.
 
-```text
-ChronoVPR-VQA/
-├── README.md                              # Project overview, benchmark results & reproduction guide
-├── LICENSE                                # MIT License (code) & CC-BY-4.0 notice (annotations)
-├── requirements.txt                       # Python dependencies
-├── assets/                                # High-resolution figures for documentation
-│   ├── teaser.png
-│   ├── framework.png
-│   ├── benchmark_sunburst.png
-│   └── scaling_law.png
-├── data/
-│   ├── DATASET_CARD.md                    # Complete benchmark documentation & image mapping guide
-│   ├── dataset_stats_clean.json           # Exact summary statistics (30,113 samples)
-│   ├── sample_preview.json                # Lightweight human-readable preview
-│   └── annotations/                       # Full blind-filtered train / val / test JSON splits
-│       ├── chrono_vpr_vqa_train.json      # 19,573 samples
-│       ├── chrono_vpr_vqa_val.json        #  2,493 samples
-│       └── chrono_vpr_vqa_test.json       #  8,047 samples
-├── checkpoints/
-│   ├── README.md                          # Model Zoo & LoRA download instructions
-│   ├── conflict_gate_best.pt              # Frozen universal 17-method Conflict Gate (2.1 MB)
-│   └── lora_adapter_config.json           # Qwen2.5-VL-7B LoRA config (r=16, alpha=32)
-├── results/
-│   ├── final_paper_results.json           # Complete 17-method VQA, ablation & noise stress logs
-│   ├── conflict_gate_eval_summary.json    # Complete 17-method Conflict Gate AUROC/TNR logs
-│   └── appendix_computed_stats.json       # Per-benchmark, per-task, yaw & temporal audits
-├── src/
-│   ├── dataset_construction/              # Topology pairing, QA generation & blind filtering
-│   ├── vpr_retrieval/                     # 17 VPR backbones (4 Eras) + CTSE sub-graph expansion
-│   ├── conflict_gate/                     # Scale-invariant 4x4 DINOv2 Conflict Gate training & scoring
-│   ├── mllm_reasoner/                     # Conflict-aware LoRA Qwen2.5-VL-7B training & vLLM eval
-│   └── analysis/                          # Paper/Appendix table & figure reproduction scripts
-└── scripts/
-    ├── verify_dataset.py                  # Quick dataset integrity & split-balance verifier
-    └── run_full_pipeline.sh               # End-to-end 4-stage pipeline script
-```
+| Source benchmark | Train | Val | Test | Total |
+| --- | ---: | ---: | ---: | ---: |
+| GSV-Cities | 9,323 | 1,156 | 1,148 | 11,627 |
+| Pittsburgh250K | 3,067 | 450 | 3,864 | 7,381 |
+| SF-XL | 4,769 | 600 | 605 | 5,974 |
+| MSLS | 2,414 | 287 | 854 | 3,555 |
+| Nordland (OOD) | 0 | 0 | 1,347 | 1,347 |
+| SPED (OOD) | 0 | 0 | 229 | 229 |
+| **Total** | **19,573** | **2,493** | **8,047** | **30,113** |
 
----
+| Reasoning task | All splits | Test split |
+| --- | ---: | ---: |
+| Occlusion recovery | 9,294 | 3,329 |
+| Out-of-FoV topology | 10,163 | 2,656 |
+| Longitudinal temporal evolution | 10,656 | 2,062 |
 
-## Installation
+The [dataset card](data/DATASET_CARD.md) documents the schema, annotation licensing, and upstream imagery. Browse [12 example annotations](data/sample_preview.json), download the [train](data/annotations/chrono_vpr_vqa_train.json), [validation](data/annotations/chrono_vpr_vqa_val.json), or [test](data/annotations/chrono_vpr_vqa_test.json) split, or inspect the [summary statistics](data/dataset_stats_clean.json).
+
+## Quick start
+
+Clone the repository and verify the annotation counts with Python 3.10 or later. The verifier and project-site build use the standard library.
 
 ```bash
-git clone https://github.com/<your-username>/ChronoVPR-VQA.git
+git clone https://github.com/CV4RA/ChronoVPR-VQA.git
 cd ChronoVPR-VQA
-
-conda create -n chronovpr python=3.11 -y
-conda activate chronovpr
-
-# Install PyTorch (CUDA 12.1+ recommended)
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
-
-# Install all project dependencies
-pip install -r requirements.txt
-```
-
-Verify the bundled `ChronoVPR-VQA` annotations immediately after cloning:
-```bash
 python scripts/verify_dataset.py
+python scripts/build_project_site.py
+python -m http.server 8000 --directory dist
 ```
 
----
+Open the [local preview](http://localhost:8000), or open `dist/index.html` directly. The site builds its data from the checked-in JSON summaries. It includes retriever filters, selectable chart points, task and dataset breakdowns, and a question preview that reveals the reference answer and evidence. The benchmark preview reads the released annotations in the browser.
 
-## Reproducing Experiments (4-Stage Pipeline)
+To regenerate the static results figure from the aggregates:
 
-Set your local workspace root (where upstream VPR imagery and cached checkpoints reside):
 ```bash
-export CHRONOVPR_ROOT=$(pwd)
+python -m pip install matplotlib
+python scripts/plot_release_results.py
+python scripts/build_project_site.py
 ```
 
-### Stage 1: 17-Method VPR Retrieval & CTSE Sub-Graph Expansion
-All 17 VPR checkpoints are automatically fetched from official upstream repositories (PyTorch Hub / Hugging Face / OpenCLIP):
+## Reproducing the experiments
+
+The annotation audit, static figure, and interactive page run from the released files on a CPU. Full model runs additionally need a Linux CUDA environment, upstream street-view imagery, compatible model dependencies, and method-specific weights. The commands below show the expected on-disk layout and experiment entry points.
+
+### 1. Set up the experiment workspace
+
+From the repository root, in a Python 3.11 virtual environment with a CUDA-compatible PyTorch installation:
+
 ```bash
-python src/vpr_retrieval/run_vpr_gallery_and_ctse.py
-python src/vpr_retrieval/run_remaining_vpr_backbones.py
+python -m pip install -r requirements.txt
+mkdir -p workspace/ChronoVPR-VQA-Clean workspace/vpr_retrievals
+cp data/annotations/chrono_vpr_vqa_*.json workspace/ChronoVPR-VQA-Clean/
+python - <<'PY'
+import json
+from pathlib import Path
+
+root = Path("workspace/ChronoVPR-VQA-Clean")
+rows = []
+for split in ("train", "val", "test"):
+    rows.extend(json.loads((root / f"chrono_vpr_vqa_{split}.json").read_text(encoding="utf-8")))
+(root / "chrono_vpr_vqa_all.json").write_text(json.dumps(rows, ensure_ascii=False), encoding="utf-8")
+PY
 ```
 
-### Stage 2: Scale-Invariant Conflict Resolution Gate (Train or Zero-Shot Score)
-You can directly use our released frozen checkpoint [`checkpoints/conflict_gate_best.pt`](checkpoints/conflict_gate_best.pt) (Val AUROC **0.8737**), or retrain from scratch on a single GPU (~3 minutes after DINOv2 feature caching):
+Place upstream query and memory images under `workspace/` at the paths specified by the annotation fields `query_img` and `oracle_memory_img`. Use the `*_orig_name` fields to map them to upstream files. For occlusion questions, the retrieval script reads the original query from its `source_stage` directory; preserve that layout when preparing the imagery. See the [dataset card](data/DATASET_CARD.md#obtaining-upstream-street-view-imagery).
+
+### 2. Run VPR retrieval and CTSE
+
 ```bash
-# Train from scratch
+python src/vpr_retrieval/run_vpr_gallery_and_ctse.py \
+  --methods resnet50_avg resnet50_gem cosplace eigenplaces dinov2_vitb14 \
+  dinov2_salad boq_dinov2 megaloc clip_vitb32 clip_vitl14
+python -m src.vpr_retrieval.run_remaining_vpr_backbones \
+  --methods netvlad patch_netvlad convap mixvpr anyloc selavpr cricavpr
+```
+
+The retrieval entry points write `workspace/vpr_retrievals/*_test_retrievals.json` and `vpr_methods_recall_summary.json`. Several backbones load through PyTorch Hub or Hugging Face. For the workspace-local backbone implementations and filenames for model weights, see the [checkpoint guide](checkpoints/README.md#upstream-vpr-assets).
+
+### 3. Score the Conflict Gate and calibrate the reasoner
+
+Use the bundled Conflict Gate with the released checkpoint, or train the gate from the prepared train/validation splits and mined retrievals.
+
+```bash
+cp checkpoints/conflict_gate_best.pt workspace/
+python -m src.conflict_gate.score_vpr_retrievals
+
+# Optional gate retraining
 python src/conflict_gate/train_conflict_gate.py
 
-# Zero-shot score any new VPR method's retrieval log
-python src/conflict_gate/score_vpr_retrievals.py
-```
-
-### Stage 3: Conflict-Aware LoRA MLLM Calibration
-Fine-tunes Qwen2.5-VL-7B-Instruct with rank-16 LoRA (`0.57%` trainable parameters, ~74 min on a single RTX 4080 32GB in BF16):
-```bash
+# Train the LoRA adapter
 python src/mllm_reasoner/train_lora_reasoner.py --num_train_samples 3600 --lr 1.5e-4 --grad_accum 8
 ```
 
-### Stage 4: Full 8,047-Query Deterministic Evaluation & Analysis
-Evaluates Single-View, Naive VPR+MLLM, Zero-Shot CTSE+Gate, Full LoRA across all 17 VPR methods, ablations, and 0%–80% aliasing noise stress tests via vLLM greedy decoding ($T=0.0$):
+The LoRA configuration is bundled. Adapter weights are absent from this checkout. If you obtain the trained adapter, the evaluator expects `adapter_config.json` and `adapter_model.safetensors` under `workspace/lora_chrono_vpr_vqa/`. See the [checkpoint guide](checkpoints/README.md).
+
+### 4. Evaluate and inspect results
+
 ```bash
-python src/mllm_reasoner/evaluate_full_benchmark.py
-python src/analysis/compute_paper_tables.py
-python src/analysis/plot_main_figures.py
+python src/mllm_reasoner/evaluate_full_benchmark.py --primary_vpr boq_dinov2
 ```
 
----
+The evaluator writes `workspace/final_paper_results.json` and uses greedy decoding. Archived aggregate results are available under [results/](results/). The [original analysis scripts](src/analysis/) consume the historical `final_experiment_backup/` layout, including per-query gated retrieval files. The release figure and website can be rebuilt directly from the bundled aggregates using the quick-start commands.
 
-## Checkpoints & Pre-Computed Results
+## Repository map
 
-| Artifact | Location / Size | Notes |
-| :--- | :--- | :--- |
-| **Conflict Resolution Gate** | [`checkpoints/conflict_gate_best.pt`](checkpoints/conflict_gate_best.pt) (2.1 MB) | Included directly in repo; universal across all 17 VPR methods |
-| **LoRA MLLM Adapter** | See [`checkpoints/README.md`](checkpoints/README.md) (190 MB) | Host via GitHub Releases / Hugging Face Hub (>100 MB GitHub file limit) |
-| **17-Method Paper Results** | [`results/final_paper_results.json`](results/final_paper_results.json) | Exact numbers for all main paper & appendix tables |
-
----
+| Path | Contents |
+| --- | --- |
+| [data/](data/) | Dataset card, three annotation splits, preview records, and summary statistics |
+| [checkpoints/](checkpoints/) | Frozen Conflict Gate weights and the LoRA configuration |
+| [results/](results/) | Main, per-method, ablation, robustness, gate, and appendix aggregates |
+| [src/dataset_construction/](src/dataset_construction/) | Topology pairing, question generation, and blind filtering |
+| [src/vpr_retrieval/](src/vpr_retrieval/) | Frozen retrieval backbones and CTSE expansion |
+| [src/conflict_gate/](src/conflict_gate/) | Conflict Gate training and scoring |
+| [src/mllm_reasoner/](src/mllm_reasoner/) | LoRA training and benchmark evaluation |
+| [src/analysis/](src/analysis/) | Original paper and appendix analyses |
+| [scripts/](scripts/) | Dataset verification and local build tools |
+| [site/](site/) | Static project website source |
+| [assets/](assets/) | Research illustrations and result figures |
 
 ## Citation
 
-If you find `ChronoVPR-VQA`, CTSE, or the Scale-Invariant Conflict Resolution Gate useful in your research, please cite:
+When citing this release, use the project title and repository URL. The current repository citation is:
 
 ```bibtex
-@article{chronovpr2026tpami,
-  title   = {Beyond Appearance Lookup: Epistemically Gated Chrono-Topological Visual Place Recognition as Spatio-Temporal Memory for Multimodal Reasoning},
-  author  = {First Author and Second Author and Third Author},
-  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI)},
-  year    = {2026},
-  note    = {Under Review}
+@misc{chronovprvqa,
+  title        = {Beyond Appearance Lookup: Epistemically Gated Chrono-Topological Visual
+                  Place Recognition as Spatio-Temporal Memory for Multimodal Reasoning},
+  howpublished = {ChronoVPR-VQA project repository},
+  url          = {https://github.com/CV4RA/ChronoVPR-VQA}
 }
 ```
 
----
+## License and acknowledgments
 
-## License & Acknowledgements
-
-- **Source Code:** Released under the [MIT License](LICENSE).
-- **Benchmark Annotations (`ChronoVPR-VQA`):** Released under **CC-BY-4.0**. Raw street-view imagery remains subject to the upstream academic licenses of **GSV-Cities**, **Pittsburgh250K**, **SF-XL**, **MSLS**, **Nordland**, and **SPED** (no raw imagery is redistributed in this repository).
-- We gratefully acknowledge the authors of NetVLAD, GeM, Patch-NetVLAD, CosPlace, EigenPlaces, Conv-AP, MixVPR, DINOv2, AnyLoc, SelaVPR, CricaVPR, SALAD, BoQ, MegaLoc, CLIP, and Qwen2.5-VL for open-sourcing their models and benchmarks.
+Source code uses the [MIT License](LICENSE). Benchmark annotations use [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) as specified in the [release license](LICENSE). Upstream images and model checkpoints have their own terms. See the [dataset card](data/DATASET_CARD.md) for the six source benchmarks and the [checkpoint guide](checkpoints/README.md) for backbone assets.
