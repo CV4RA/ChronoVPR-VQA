@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b121a">
+  <meta name="description" content="Explore ChronoVPR-VQA, a benchmark and spatio-temporal memory framework for visual reasoning beyond a single street view.">
+  <title>ChronoVPR-VQA · Beyond Appearance Lookup</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="data.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <nav class="wrap nav" aria-label="Main navigation">
+      <a class="brand" href="#main"><span class="brand-mark" aria-hidden="true">◉</span> ChronoVPR<span>-VQA</span></a>
+      <div class="nav-links">
+        <a href="#results">Results</a>
+        <a href="#method">Method</a>
+        <a href="#benchmark">Benchmark</a>
+      </div>
+      <a class="button ghost nav-code" href="https://github.com/CV4RA/ChronoVPR-VQA">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Visual place recognition × multimodal reasoning</p>
+        <h1 id="hero-title">Beyond<br>appearance<br><em>lookup.</em></h1>
+        <p class="intro">What can a place remember? ChronoVPR-VQA retrieves and verifies complementary street views across heading and time, then uses them to answer questions beyond the current frame.</p>
+        <div class="actions">
+          <a class="button primary" href="#results">Explore the results</a>
+          <a class="button ghost" href="#demo">Try a benchmark question</a>
+        </div>
+      </div>
+      <figure class="hero-figure">
+        <div class="memory-scene">
+          <div class="scene-frame" id="scene-frame" data-frame="query" aria-label="Illustrative masked query street view" role="img"></div>
+          <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+          <span class="scene-label" id="scene-label">QUERY VIEW</span>
+          <div class="viewfinder" aria-hidden="true"><span></span></div>
+        </div>
+        <figcaption class="memory-footer">
+          <div class="segmented view-controls" aria-label="Choose an illustrative view">
+            <button type="button" data-view="query" aria-pressed="true">2019 · Query</button>
+            <button type="button" data-view="memory" aria-pressed="false">2009 · Memory</button>
+          </div>
+          <span>Project teaser example</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <dl class="wrap stat-strip" aria-label="Headline results">
+      <div><dt>Best VQA accuracy</dt><dd>73.75<span>%</span></dd></div>
+      <div><dt>Gain vs. naïve VPR</dt><dd>+25.59–27.18 <span>pp</span></dd></div>
+      <div><dt>Test questions</dt><dd>8,047</dd></div>
+      <div><dt>VPR backbones</dt><dd>17</dd></div>
+    </dl>
+
+    <section id="results" class="wrap section">
+      <div class="section-heading">
+        <div><p class="eyebrow">Evaluation</p><h2>Explore the evidence.</h2></div>
+        <p>Compare frozen retrievers, inspect the contribution of each component, or follow accuracy as retrieval noise increases.</p>
+      </div>
+      <div class="panel explorer" id="explorer">
+        <div class="segmented plot-controls" aria-label="Results view">
+          <button type="button" data-plot="accuracy" aria-pressed="true">VQA by retriever</button>
+          <button type="button" data-plot="gate" aria-pressed="false">Gate AUROC</button>
+          <button type="button" data-plot="ablation" aria-pressed="false">Ablation</button>
+          <button type="button" data-plot="noise" aria-pressed="false">Noise stress test</button>
+        </div>
+        <div class="plot-head">
+          <div><h3 id="plot-title">VQA accuracy across 17 retrievers</h3><p id="plot-explainer">Each pair shows the naïve and full-system VQA accuracy for one retriever.</p></div>
+          <label class="field" id="family-field">Retriever family<select id="family"><option value="all">All families</option><option value="early">Early CNN / VLAD</option><option value="cnn">Large-scale CNN</option><option value="vfm">Foundation models</option><option value="clip">CLIP</option></select></label>
+        </div>
+        <div id="plot-legend" class="plot-legend"></div>
+        <div id="chart" class="chart" aria-labelledby="plot-title"></div>
+        <p id="plot-detail" class="plot-detail" aria-live="polite">Select a point or a table row for exact values.</p>
+        <details class="data-details">
+          <summary>View exact values</summary>
+          <div class="table-scroll" tabindex="0" aria-label="Scrollable results table">
+            <table id="results-table"></table>
+          </div>
+        </details>
+        <noscript><p>Enable JavaScript to use the explorer.</p><img src="assets/release_results.png" alt="Static benchmarks for all 17 retrievers and the noise stress test"></noscript>
+      </div>
+      <div class="panel breakdown">
+        <div class="breakdown-copy">
+          <p class="eyebrow">BoQ-DINOv2 breakdown</p>
+          <h3>Where does memory help?</h3>
+          <p>Compare the same evaluation protocols for each task and dataset. Nordland and SPED are test-only holdouts.</p>
+          <label class="field">Evaluation slice<select id="slice"><option value="overall">Overall</option><optgroup label="Reasoning tasks"><option value="occlusion_recovery">Occlusion recovery</option><option value="out_of_fov" selected>Out-of-FoV reasoning</option><option value="temporal_evolution">Temporal evolution</option></optgroup><optgroup id="dataset-options" label="Datasets"></optgroup></select></label>
+        </div>
+        <div id="slice-chart" class="slice-chart" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section id="method" class="wrap section">
+      <div class="section-heading">
+        <div><p class="eyebrow">Method</p><h2>From place to evidence.</h2></div>
+        <p>Retrieve a physical anchor, navigate its memory graph, and verify the evidence before reasoning.</p>
+      </div>
+      <ol class="pipeline">
+        <li><h3>Encode the query</h3><p>A frozen VPR model retrieves a place anchor. The question identifies the relevant occlusion, heading or time shift.</p></li>
+        <li><h3>Expand the memory</h3><p>Chrono-Topological Sub-Graph Expansion (CTSE) searches for a complementary view around the anchor.</p></li>
+        <li><h3>Verify the match</h3><p>The Conflict Gate scores spatial DINOv2 patch correlations and scale-invariant metadata.</p></li>
+        <li><h3>Reason with context</h3><p>A LoRA-calibrated Qwen2.5-VL-7B reasoner uses the view pair, geometry, timing and gate score.</p></li>
+      </ol>
+      <details class="figure-details panel">
+        <summary>View the full architecture</summary>
+        <a href="assets/framework.png"><img src="assets/framework.png" alt="Architecture from query encoding and CTSE traversal through conflict gating and the LoRA reasoner" loading="lazy"></a>
+      </details>
+    </section>
+
+    <section id="benchmark" class="wrap section">
+      <div class="section-heading">
+        <div><p class="eyebrow">Dataset</p><h2>30,113 places.<br>Three ways to reason.</h2></div>
+        <p>Blind-filtered multiple-choice questions span six VPR datasets and ask about occluded evidence, views outside the frame, and change over time.</p>
+      </div>
+      <div class="benchmark-grid">
+        <div class="panel splits">
+          <h3>Dataset splits</h3>
+          <div id="split-chart"></div>
+          <a class="inline-link" href="https://github.com/CV4RA/ChronoVPR-VQA/blob/main/data/DATASET_CARD.md">Read the dataset card</a>
+        </div>
+        <div class="panel demo" id="demo">
+          <div class="demo-top">
+            <h3>Inspect a benchmark question</h3>
+            <button type="button" id="next-question" class="button ghost">Next example</button>
+          </div>
+          <label class="field">Reasoning task<select id="demo-task"><option value="all">All tasks</option><option value="occlusion_recovery">Occlusion recovery</option><option value="out_of_fov">Out-of-FoV reasoning</option><option value="temporal_evolution">Temporal evolution</option></select></label>
+          <p id="demo-meta" class="muted"></p>
+          <p id="demo-question" class="question"></p>
+          <div id="demo-options" class="answers" aria-label="Answer choices"></div>
+          <p class="muted" id="demo-instruction">Annotation preview. Select an option to reveal the reference answer and evidence summary.</p>
+          <div id="demo-feedback" class="feedback" aria-live="polite" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap section resources" aria-labelledby="resources-title">
+      <div><p class="eyebrow">Research artifacts</p><h2 id="resources-title">Reproduce the work.</h2></div>
+      <div class="actions">
+        <a class="button primary" href="https://github.com/CV4RA/ChronoVPR-VQA#quick-start">Reproduction guide</a>
+        <a class="button ghost" href="https://github.com/CV4RA/ChronoVPR-VQA/tree/main/results">Result files</a>
+        <a class="button ghost" href="https://github.com/CV4RA/ChronoVPR-VQA/tree/main/checkpoints">Checkpoints</a>
+      </div>
+    </section>
+  </main>
+  <footer class="wrap footer">
+    <a class="brand" href="#main"><span class="brand-mark" aria-hidden="true">◉</span> ChronoVPR<span>-VQA</span></a>
+    <p>Beyond Appearance Lookup · Chrono-Topological Visual Memory</p>
+  </footer>
+</body>
+</html>
