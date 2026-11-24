@@ -233,9 +233,7 @@ When citing this release, use the project title and repository URL. The current 
 
 ```bibtex
 @misc{chronovprvqa,
-  title        = {Beyond Appearance Lookup: Epistemically Gated Chrono-Topological Visual
-                  Place Recognition as Spatio-Temporal Memory for Multimodal Reasoning},
-  howpublished = {ChronoVPR-VQA project repository},
+  title        = {Epistemically Gated Chrono-Topological Visual Memory for Physical-World Multimodal Reasoning},
   url          = {https://github.com/CV4RA/ChronoVPR-VQA}
 }
 ```
