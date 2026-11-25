@@ -6,7 +6,7 @@
 
 *Epistemically Gated Chrono-Topological Visual Place Recognition as Spatio-Temporal Memory for Multimodal Reasoning*
 
-[Interactive project page](https://cv4ra.github.io/ChronoVPR-VQA/) · [Results](#main-results) · [Dataset](#benchmark) · [Quick start](#quick-start) · [Reproduction](#reproducing-the-experiments)
+[Project Page](https://cv4ra.github.io/ChronoVPR-VQA/) 
 
 [![Code license: MIT](https://img.shields.io/badge/code-MIT-096b79)](LICENSE)
 [![Annotations: CC BY 4.0](https://img.shields.io/badge/annotations-CC%20BY%204.0-136c56)](data/DATASET_CARD.md)
